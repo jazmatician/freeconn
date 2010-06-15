@@ -4,6 +4,7 @@
     <Instances count="1" />
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="AzureDiagnosticsConnectionString" value="DefaultEndpointsProtocol=https;AccountName=azurevadb;AccountKey=PeRvD+Yt6GPU5WcESNjBBqumJAFP/vzsbeMwTonf8l0MzdsVjtMQhd3IHi+qCFqr5TjDRCXJvNI5miq8Lv2Z9Q==" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

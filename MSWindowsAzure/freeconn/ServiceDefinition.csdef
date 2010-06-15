@@ -3,6 +3,10 @@
   <WorkerRole name="FreeConnHttpProxyServer">
     <ConfigurationSettings>
       <Setting name="DiagnosticsConnectionString" />
+      <Setting name="AzureDiagnosticsConnectionString" />
     </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="ProxyPort" protocol="http" port="10000" />
+    </Endpoints>
   </WorkerRole>
 </ServiceDefinition>

@@ -8,6 +8,8 @@ using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Diagnostics;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Microsoft.WindowsAzure.StorageClient;
+using System.Net.Sockets;
+using System.IO;
 
 namespace FreeConnHttpProxyServer
 {
@@ -18,10 +20,32 @@ namespace FreeConnHttpProxyServer
             // This is a sample worker implementation. Replace with your logic.
             Trace.WriteLine("FreeConnHttpProxyServer entry point called", "Information");
 
-            while (true)
+            RoleInstanceEndpoint endPoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["ProxyPort"];
+            try
             {
-                Thread.Sleep(10000);
-                Trace.WriteLine("Working", "Information");
+                // Create a listener for the proxy port
+                HttpListener httpListener;
+                TcpListener sockServer = new TcpListener(endPoint.IPEndpoint);
+                sockServer.Start();
+
+                Trace.TraceInformation("Ready for work!!!");
+                while (true)
+                {
+                    // Accept connections on the proxy port.
+                    Socket socket = sockServer.AcceptSocket();
+
+                    // When AcceptSocket returns, it means there is a connection. Create
+                    // an instance of the proxy server class and start a thread running.
+                    HttpProxyServer proxy = new HttpProxyServer(socket);
+                    Thread thrd = new Thread(new ThreadStart(proxy.Run));
+                    thrd.Start();
+                    // While the thread is running, the main program thread will loop around
+                    // and listen for the next connection request.
+                }
+            }
+            catch (IOException e)
+            {
+                Trace.TraceError(e.Message);
             }
         }
 
@@ -31,6 +55,10 @@ namespace FreeConnHttpProxyServer
             ServicePointManager.DefaultConnectionLimit = 12;
 
             DiagnosticMonitor.Start("DiagnosticsConnectionString");
+
+            //DiagnosticMonitorConfiguration config = DiagnosticMonitor.GetDefaultInitialConfiguration();
+            //config.Logs.ScheduledTransferPeriod = new System.TimeSpan(0, 0, 30);
+            //DiagnosticMonitor.Start("AzureDiagnosticsConnectionString");
 
             // For information on handling configuration changes
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
