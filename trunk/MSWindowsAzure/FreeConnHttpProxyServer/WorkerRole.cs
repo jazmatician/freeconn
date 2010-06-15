@@ -24,11 +24,10 @@ namespace FreeConnHttpProxyServer
             try
             {
                 // Create a listener for the proxy port
-                HttpListener httpListener;
                 TcpListener sockServer = new TcpListener(endPoint.IPEndpoint);
                 sockServer.Start();
 
-                Trace.TraceInformation("Ready for work!!!");
+                Trace.WriteLine("Read !!!");
                 while (true)
                 {
                     // Accept connections on the proxy port.
@@ -45,8 +44,9 @@ namespace FreeConnHttpProxyServer
             }
             catch (IOException e)
             {
-                Trace.TraceError(e.Message);
+                Trace.WriteLine(e.Message);
             }
+
         }
 
         public override bool OnStart()

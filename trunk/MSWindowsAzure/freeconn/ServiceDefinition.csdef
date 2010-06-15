@@ -6,7 +6,7 @@
       <Setting name="AzureDiagnosticsConnectionString" />
     </ConfigurationSettings>
     <Endpoints>
-      <InputEndpoint name="ProxyPort" protocol="http" port="10000" />
+      <InputEndpoint name="ProxyPort" protocol="http" port="32572" />
     </Endpoints>
   </WorkerRole>
 </ServiceDefinition>
