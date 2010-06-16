@@ -57,8 +57,8 @@ namespace FreeConnHttpProxyServer
             DiagnosticMonitor.Start("DiagnosticsConnectionString");
 
             //DiagnosticMonitorConfiguration config = DiagnosticMonitor.GetDefaultInitialConfiguration();
-            //config.Logs.ScheduledTransferPeriod = new System.TimeSpan(0, 0, 30);
-            //DiagnosticMonitor.Start("AzureDiagnosticsConnectionString");
+            //config.Logs.ScheduledTransferPeriod = new System.TimeSpan(0, 0, 5);
+            //DiagnosticMonitor.Start("AzureDiagnosticsConnectionString", config);
 
             // For information on handling configuration changes
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
