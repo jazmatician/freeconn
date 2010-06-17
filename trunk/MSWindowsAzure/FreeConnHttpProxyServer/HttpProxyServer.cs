@@ -18,13 +18,14 @@ namespace FreeConnHttpProxyServer
         Socket m_sockClient; //, m_sockServer;
         Byte[] readBuf = new Byte[1024];
         Byte[] buffer = null;
-        Encoding ASCII = Encoding.ASCII;
+        Encoding myEncoding = Encoding.UTF8;
 
         public void Run()
         {
-            string strFromClient = "";
             try
             {
+                /*
+                string strFromClient = "";
                 // Read the incoming text on the socket/
                 int bytes = ReadMessage(m_sockClient,
                                          readBuf, ref strFromClient);
@@ -49,11 +50,18 @@ namespace FreeConnHttpProxyServer
                                    strClientConnection);
                 Trace.WriteLine("Connection from " +
                                    m_sockClient.RemoteEndPoint);
+
                 // Create a WebRequest object.
                 WebRequest req = (WebRequest)WebRequest.Create
                                                      (strClientConnection);
+                */
+                WebRequest req = RequestFactory.CreateWebRequestFromSocket(m_sockClient, myEncoding);
+                if (req == null)
+                    return;
+
                 // Get the response from the Web site.
                 WebResponse response = req.GetResponse();
+
                 int BytesRead = 0;
                 Byte[] Buffer = new Byte[32];
                 int BytesSent = 0;
@@ -67,7 +75,7 @@ namespace FreeConnHttpProxyServer
                 while (BytesRead != 0)
                 {
                     // Pass the response back to the client
-                    strResponse.Append(Encoding.ASCII.GetString(Buffer,
+                    strResponse.Append(this.myEncoding.GetString(Buffer,
                                         0, BytesRead));
                     m_sockClient.Send(Buffer, BytesRead, 0);
                     BytesSent += BytesRead;
@@ -117,17 +125,24 @@ namespace FreeConnHttpProxyServer
         // Send a string to a socket.
         void SendMessage(Socket sock, string strMessage)
         {
-            buffer = new Byte[strMessage.Length + 1];
-            int len = ASCII.GetBytes(strMessage.ToCharArray(),
-                                      0, strMessage.Length, buffer, 0);
-            sock.Send(buffer, len, 0);
+            if (sock.Connected)
+            {
+                buffer = new Byte[strMessage.Length + 1];
+                int len = myEncoding.GetBytes(strMessage.ToCharArray(),
+                                          0, strMessage.Length, buffer, 0);
+                sock.Send(buffer, len, 0);
+            }
+            else
+            {
+                Trace.WriteLine("Socket lost connection with : " + sock.RemoteEndPoint);
+            }
         }
 
         // Read a string from a socket.
         int ReadMessage(Socket sock, byte[] buf, ref string strMessage)
         {
-            int iBytes = sock.Receive(buf, 1024, 0);
-            strMessage = Encoding.ASCII.GetString(buf);
+            int iBytes = sock.Receive(buf, buf.Length, 0);
+            strMessage = this.myEncoding.GetString(buf);
             return (iBytes);
         }
     }
